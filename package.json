@@ -1,0 +1,29 @@
+{
+  "name": "ttt.takanarisun.design",
+  "version": "1.0.0",
+  "author": "takanarisun",
+  "bugs": {
+    "url": "https://github.com/kamikikai/ttt.takanarisun.design/issues"
+  },
+  "homepage": "https://github.com/kamikikai/ttt.takanarisun.design#readme",
+  "license": "MIT",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kamikikai/ttt.takanarisun.design.git"
+  },
+  "scripts": {
+    "start": "gulp"
+  },
+  "devDependencies": {
+    "autoprefixer": "^6.2.3",
+    "gulp": "github:gulpjs/gulp#4.0",
+    "gulp-csso": "^1.0.1",
+    "gulp-inject": "^3.0.0",
+    "gulp-less": "^3.0.5",
+    "gulp-postcss": "^6.0.1"
+  },
+  "dependencies": {
+    "purecss": "^0.6.0"
+  }
+}
