@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <title>{Title}{block:SearchPage} ({lang:Search results for
+    SearchQuery}){/block:SearchPage}{block:PermalinkPage}{block:PostSummary} —
+    {PostSummary}{/block:PostSummary}{/block:PermalinkPage}</title>
+
+  <meta charset="utf-8">
+  <meta name="description"
+        content="{block:IndexPage}{block:Description}{MetaDescription}{/block:Description}{/block:IndexPage}{block:PermalinkPage}{block:PostSummary}{PostSummary}{/block:PostSummary}{/block:PermalinkPage}"/>
+  <meta property="og:title" content="{block:PostTitle}{PostTitle}{/block:PostTitle}"/>
+  <meta property="og:type" content="blog"/>
+  <meta property="og:url" content="{Permalink}"/>
+  <meta property="og:image" content="{PortraitURL-120}"/>
+  <meta property="og:site_name" content="{Title}"/>
+  <meta property="fb:admins" content="100003244092600"/>
+  <meta property="og:description" content="{block:Description}{MetaDescription}{/block:Description}"/>
+  <meta name="image:Header" content="" align="left"/>
+
+  <meta name="text:Disqus Shortname" content=""/>
+  <meta name="text:Google Analytics ID" content=""/>
+
+  <link rel="shortcut icon" href="{Favicon}"/>
+  <link rel="alternate" type="application/rss+xml" title="RSS" href="{RSS}"/>
+  <!-- style:css -->
+  <!-- endinject -->
+  <style type="text/css" media="screen">
+    {
+      CustomCSS
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <!-- logo:svg -->
+    <!-- endinject -->
+  </div>
+  <div class="info pure-g">
+    <a href="http://takanarisun.design/" class="pure-u-1 pure-u-md-1-3" target="_blank">
+      <span class="icon">
+        <!-- icon-home:svg -->
+        <!-- endinject -->
+      </span>
+      takanarisun.design
+    </a>
+    <a href="https://twitter.com/takanarisun" class="pure-u-1 pure-u-md-1-3" target="_blank">
+      <span class="icon">
+        <!-- icon-twitter:svg -->
+        <!-- endinject -->
+      </span>
+      takanarisun
+    </a>
+    <a href="http://www.kamikikai.com/" class="pure-u-1 pure-u-md-1-3" target="_blank">
+      <span class="icon">
+        <!-- icon-kamikikai:svg -->
+        <!-- endinject -->
+      </span>
+      kamikikai
+    </a>
+  </div>
+</header>
+<div class="container">
+  <div class="posts pure-g">
+    <!--post-->
+    {block:Posts}
+    <article class="pure-u-1 pure-u-md-1-3">
+      {block:Photo}
+      <a href="{PhotoURL-HighRes}" class="link-modal">
+        <figure>
+          <img class="pure-img" src="{PhotoURL-HighRes}" alt="{PhotoAlt}">
+          {block:Caption}
+          <figcaption>
+            {Caption}
+            {Question}
+          </figcaption>
+          {/block:Caption}
+        </figure>
+      </a>
+      {/block:Photo}
+      {block:Date}
+      <div class="buttons-set">
+        <a href="{Permalink}" class="button-link month-{Month}">{Month} {DayOfMonth}, {Year}</a>
+
+        <div class="button-box">
+          {ReblogButton size="24"}
+        </div>
+        <div class="button-box">
+          {LikeButton size="24"}
+        </div>
+      </div>
+      {/block:Date}
+    </article>
+    {/block:Posts}
+    <!--/post-->
+  </div>
+</div>
+<div class="pagination">
+  <div class="btn-next"></div>
+</div>
+
+<footer>
+  <section class="copyright">&copy; {CopyrightYears} kamikikai inc.</section>
+</footer>
+<div class="back">
+  <div class="back-wrapper">
+    <img alt="big"/></div>
+</div>
+<!--pagination:next{block:Pagination}{NextPage}{/block:Pagination}-->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script>
+
+  $(function () {
+    var $window = $(window);
+    var $document = $(document);
+    var $body = $(document.body);
+    var $info = $('.info');
+    var $back = $('.back');
+    var $img = $('.back img');
+    var $posts = $('.posts');
+    var currentPage = Number('{CurrentPage}');
+    var totalPage = Number('{TotalPages}')
+    var $next = $('.btn-next');
+    var isLoading = false;
+
+    function changeNextStatus(status) {
+      isLoading = status;
+
+      if (currentPage === totalPage) {
+        isLoading = true;
+        $next.html('End');
+        return;
+      }
+      $next.html(isLoading ? 'Loading' : 'End');
+    }
+
+    changeNextStatus(false);
+
+    function loadNextPage() {
+      if (!isLoading && currentPage < totalPage) {
+        changeNextStatus(true);
+        $.get('/page/' + (currentPage + 1)).success(function (html) {
+          currentPage += 1;
+          $posts.append(html.split('<!--post-->')[1].split('<!--/post-->')[0]);
+          changeNextStatus(false);
+        }).fail(function () {
+          changeNextStatus(false);
+        });
+      }
+    }
+
+    $window.on('scroll', function (e) {
+      var scrollTop = $document.scrollTop();
+      if (scrollTop > 512 - 45) {
+        $info.addClass('fixed');
+      } else {
+        $info.removeClass('fixed');
+      }
+      if ($next.offset().top < scrollTop + $window.height()) {
+        loadNextPage();
+      }
+    });
+
+    $next.on('click', function (e) {
+      loadNextPage();
+    });
+
+    $document.on('click', '.link-modal', function (e) {
+      $img.attr('src', $(e.target).attr('src'));
+      $back.addClass('show');
+      $body.css('overflow', 'hidden');
+      e.preventDefault();
+    });
+
+    $back.on('click', function () {
+      $body.css('overflow', 'inherit');
+      $back.removeClass('show');
+    });
+  });
+</script>
+{block:Twitter}
+<script type="text/javascript" src="/tweets.js"></script>
+{/block:Twitter}
+
+{block:IfGoogleAnalyticsID}
+<script type="text/javascript">
+  var _gaq = [['_setAccount', '{text:Google Analytics ID}'], ['_trackPageview']];
+  (function (d, t) {
+    var g = d.createElement(t), s = d.getElementsByTagName(t)[0];
+    g.src = ('https:' == location.protocol ? '//ssl' : '//www') + '.google-analytics.com/ga.js';
+    s.parentNode.insertBefore(g, s)
+  }(document, 'script'));
+</script>
+{/block:IfGoogleAnalyticsID}
+</body>
+</html>
